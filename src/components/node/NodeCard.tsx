@@ -202,7 +202,7 @@ export const NodeCard = memo(function NodeCard({
 
 function NodeCardHeader({
   node,
-  subtitle,
+  subtitle: _subtitle,
   osName,
 }: {
   node: NodeCardNode;
@@ -224,13 +224,8 @@ function NodeCardHeader({
             {node.name}
           </Link>
         </div>
-        {(subtitle || node.ipv4 || node.ipv6) && (
+        {(node.ipv4 || node.ipv6) && (
           <div className="server-card-subtitle-row" data-detail-click="off">
-            {subtitle && (
-              <span className="server-card-subtitle" title={subtitle}>
-                {subtitle}
-              </span>
-            )}
             <IpStackBadges ipv4={node.ipv4} ipv6={node.ipv6} />
           </div>
         )}

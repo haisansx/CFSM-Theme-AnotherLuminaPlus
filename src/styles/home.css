@@ -4149,6 +4149,7 @@
   border-radius: 1.5px;
 }
 
+
 /* 用户定制：隐藏服务器集群大横幅，下方直接展示 VPS 卡片 */
 .mao-section-header,
 .mao-cluster-card > .mao-section-header,
@@ -4169,22 +4170,61 @@
   box-shadow: none !important;
 }
 
-/* 用户定制：隐藏服务器集群大横幅，下方直接展示 VPS 卡片 */
-.mao-section-header,
-.mao-cluster-card > .mao-section-header,
-.mao-cluster-controls-wrap,
-.home-group-tabs {
+/* 用户定制：隐藏 VPS 卡片上的 Default 分组标签 */
+.server-card-subtitle,
+.compact-node-subtitle {
   display: none !important;
 }
-.mao-cluster-card {
-  border: none !important;
-  background: transparent !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  gap: 12px !important;
+
+/* 用户定制：左侧监控总览再度收窄至 340px，腾出超大空间给右侧世界地图 */
+.mao-dashboard-hero {
+  display: grid !important;
+  grid-template-columns: 340px minmax(0, 1fr) !important;
+  gap: 16px !important;
+  align-items: stretch !important;
 }
-:root[data-appearance="dark"] .mao-cluster-card {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+
+@media (max-width: 1024px) {
+  .mao-dashboard-hero {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 用户定制：删除资产总值和活跃连接两个卡片 */
+.mao-stat-card[data-metric="connections"],
+.mao-stat-card[data-metric="asset"] {
+  display: none !important;
+}
+
+/* 用户定制：2x2 四宫格布局 */
+.mao-stat-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+/* 顶部紧凑状态栏 */
+.mao-cluster-mini-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 5px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+:root[data-appearance="dark"] .mao-cluster-mini-summary {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.mao-node-blocks.is-compact {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+  max-width: 140px;
+}
+.mao-node-blocks.is-compact .mao-node-block {
+  width: 6px;
+  height: 6px;
+  border-radius: 1.5px;
 }
