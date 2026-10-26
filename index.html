@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!--
+      纯静态部署（GitHub Pages 等）时把后端地址填进来，多个用英文逗号分隔；
+      由 Worker 托管时留空即可，前端会用同源地址。
+      `npm run build:github-page` 会用 .env 里的 API_BASE 自动写入这里。
+    -->
+    <meta name="apiBase" content="" />
+    <meta
+      name="keywords"
+      content="CFSM-Theme-SAO, CF-Server-Monitor, SAO, server monitor, real-time server status, server performance dashboard" />
+    <meta name="theme-color" content="#f4f5f7" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="CFSM-Theme-SAO" />
+    <!--
+      添加到主屏幕（PWA）的图标：内置 CFSM-SAO 页头的螺旋图标（iOS 只认 PNG，180×180、不透明）。
+      用白底黑标：iOS 只取这一张、不认 prefers-color-scheme，深色外观由系统按浅色图标自动生成；
+      透明底会被 iOS 填成黑色，黑标就看不见了。
+      构建时由 vite.config.ts 的 inlineAppleTouchIcon 把这张图以 data: 内联进来（见那里的说明）。
+      后台「外观设置」配了站点图标时，后端会把这条替换成站点图标。
+    -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon.ico" />
+    <meta property="og:title" content="CFSM-Theme-SAO" />
+    <meta property="og:description" content="A restrained modern theme for CF-Server-Monitor." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CFSM-Theme-SAO" />
+    <meta name="twitter:description" content="A restrained modern theme for CF-Server-Monitor." />
+    <title>CF-Server-Monitor</title>
+    <meta name="description" content="A restrained modern theme for CF-Server-Monitor." />
+    <script>
+      (() => {
+        // 超前核心 API 预加载：利用浏览器解析 HTML 与下载 React Bundle 的网络空档期，提前并发拉取关键数据
+        try {
+          if (typeof window !== "undefined" && typeof fetch === "function") {
+            const getMeta = (name) => {
+              const el = document.querySelector(`meta[name="${name}"]`);
+              return el ? (el.content || "").trim() : "";
+            };
+            const stripTrailing = (s) => (s || "").replace(/\/+$/, "");
+            const normalizeBase = (val) => {
+              const raw = stripTrailing(val);
+              if (!raw) return "";
+              try {
+                return stripTrailing(new URL(raw, window.location.href).origin);
+              } catch {
+                return "";
+              }
+            };
+            const rawBases = getMeta("apiBase");
+            let bases = [];
+            if (rawBases) {
+              bases = rawBases.split(",").map(normalizeBase).filter(Boolean);
+            }
+            if (bases.length === 0) {
+              bases = [stripTrailing(window.location.origin)];
+            }
+            bases = Array.from(new Set(bases));
+
+            const getStorage = (k) => {
+              try { return localStorage.getItem(k) || ""; } catch { return ""; }
+            };
+            const headers = { Accept: "application/json" };
+            const jwt = getStorage("jwt_token");
+            if (jwt) headers["Authorization"] = "Bearer " + jwt;
+            const turnstileVerified = getStorage("turnstile_verified");
+            if (turnstileVerified) {
+              headers["X-Turnstile-Verified"] = turnstileVerified;
+            } else {
+              const turnstileToken = getStorage("turnstile_token");
+              if (turnstileToken) headers["X-Turnstile-Token"] = turnstileToken;
+            }
+
+            const primaryBase = bases[0] || "";
+            // 预取主站 /api/config
+            const configPromise = fetch(primaryBase + "/api/config", {
+              credentials: "include",
+              headers,
+            }).then(r => r.ok ? r.json() : null).catch(() => null);
+
+            // 预取各站 /api/servers
+            const serversPromises = bases.map(base => ({
+              base,
+              promise: fetch(base + "/api/servers", {
+                credentials: "include",
+                headers,
+              }).then(async r => {
+                if (!r.ok) return { base, error: new Error(`HTTP ${r.status}`) };
+                const data = await r.json();
+                return { base, data };
+              }).catch(err => ({ base, error: err })),
+            }));
+
+            window.__EARLY_DATA__ = {
+              config: configPromise,
+              servers: serversPromises,
+            };
+          }
+        } catch {}
+
+        try {
+          const cachedTitle = localStorage.getItem("cfsmtheme:sitename") || localStorage.getItem("komaritheme:sitename");
+          if (cachedTitle && cachedTitle.trim()) {
+            document.title = cachedTitle.trim();
+            const setMeta = (sel, val) => {
+              const el = document.querySelector(sel);
+              if (el) el.setAttribute("content", val);
+            };
+            setMeta('meta[name="apple-mobile-web-app-title"]', cachedTitle.trim());
+            setMeta('meta[property="og:title"]', cachedTitle.trim());
+            setMeta('meta[name="twitter:title"]', cachedTitle.trim());
+          }
+          const cachedDesc = localStorage.getItem("cfsmtheme:description") || localStorage.getItem("komaritheme:description");
+          if (cachedDesc && cachedDesc.trim()) {
+            const setMeta = (sel, val) => {
+              const el = document.querySelector(sel);
+              if (el) el.setAttribute("content", val);
+            };
+            setMeta('meta[name="description"]', cachedDesc.trim());
+            setMeta('meta[property="og:description"]', cachedDesc.trim());
+            setMeta('meta[name="twitter:description"]', cachedDesc.trim());
+          }
+        } catch {}
+        const appearances = new Set(["system", "light", "dark"]);
+        const readAppearance = (key) => {
+          const raw = localStorage.getItem(key);
+          if (raw == null) return null;
+          let value = raw;
+          try {
+            value = JSON.parse(raw);
+          } catch {}
+          if (!appearances.has(value)) return null;
+          const normalized = JSON.stringify(value);
+          if (raw !== normalized) localStorage.setItem(key, normalized);
+          return value;
+        };
+
+        let appearance = "system";
+        try {
+          appearance = readAppearance("appearance") ?? readAppearance("appearance_default") ?? "system";
+        } catch {
+          appearance = "system";
+        }
+        const resolved =
+          appearance === "system"
+            ? window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light"
+            : appearance;
+        document.documentElement.dataset.appearance = resolved;
+        document.documentElement.style.colorScheme = resolved;
+        const isDark = resolved === "dark";
+        const color = isDark ? "#09090b" : "#f4f5f7";
+        document.documentElement.style.backgroundColor = color;
+        const metas = document.querySelectorAll('meta[name="theme-color"]');
+        metas.forEach((el) => el.remove());
+        const meta = document.createElement("meta");
+        meta.name = "theme-color";
+        meta.content = color;
+        document.head.appendChild(meta);
+        const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+        if (statusMeta) {
+          statusMeta.content = isDark ? "black-translucent" : "default";
+        }
+
+        try {
+          const rawDepth = localStorage.getItem("komaritheme:dark-depth");
+          if (rawDepth != null) {
+            const parsedDepth = Number(rawDepth);
+            const darkDepth = Number.isFinite(parsedDepth)
+              ? Math.min(100, Math.max(0, Math.round(parsedDepth)))
+              : 0;
+            if (darkDepth > 0) {
+              document.documentElement.style.setProperty(
+                "--dark-depth",
+                String(darkDepth),
+              );
+            } else {
+              document.documentElement.style.removeProperty("--dark-depth");
+            }
+          }
+        } catch {}
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-CbagRIRo.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/rolldown-runtime-Cyuzqnbw.js">
+    <link rel="modulepreload" crossorigin href="./assets/query-C_NiE4k5.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-CXxcg5zG.js">
+    <link rel="modulepreload" crossorigin href="./assets/validation-ByCAF8jQ.js">
+    <link rel="modulepreload" crossorigin href="./assets/i18n-LWega9A5.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-CQBqkHg9.css">
+    <meta name="theme-version" content="AnotherLuminaPlus v1.9.17" />
+  </head>
+  <body>
+    <div id="root" class="relative z-30"></div>
+  </body>
+</html>
