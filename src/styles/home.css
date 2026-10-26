@@ -4152,6 +4152,7 @@
 
 
 
+
 /* 用户定制：隐藏服务器集群大横幅，下方直接展示 VPS 卡片 */
 .mao-section-header,
 .mao-cluster-card > .mao-section-header,
@@ -4178,24 +4179,24 @@
   display: none !important;
 }
 
-/* 用户定制：左侧选项卡横向拉伸至 440px，整体高度压缩至 275px，腾出纵向空间展现第一排 VPS 卡片 */
+/* 用户定制：左侧监控总览拉伸至 480px，右侧地图相应收窄；整体纵向拉伸至 335px-350px，保障内容完整展示 */
 .mao-dashboard-hero {
   display: grid !important;
-  grid-template-columns: 440px minmax(0, 1fr) !important;
-  gap: 12px !important;
+  grid-template-columns: 480px minmax(0, 1fr) !important;
+  gap: 16px !important;
   align-items: stretch !important;
-  max-height: 275px !important;
-  min-height: 260px !important;
-  margin-bottom: 12px !important;
+  min-height: 335px !important;
+  max-height: 350px !important;
+  margin-bottom: 16px !important;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .mao-dashboard-hero {
-    grid-template-columns: 380px minmax(0, 1fr) !important;
+    grid-template-columns: 440px minmax(0, 1fr) !important;
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .mao-dashboard-hero {
     grid-template-columns: 1fr !important;
     max-height: none !important;
@@ -4203,31 +4204,32 @@
   }
 }
 
-/* 用户定制：左侧卡片压扁紧凑，内边距压缩 */
+/* 左侧监控总览卡片：舒适内边距，完全消除截断与错位 */
 .mao-hero-main {
-  padding: 10px 14px !important;
+  padding: 16px 18px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  max-height: 275px !important;
-  overflow: hidden !important;
+  min-height: 335px !important;
+  max-height: 350px !important;
+  overflow: visible !important;
 }
 
 .mao-hero-header {
-  margin-bottom: 3px !important;
+  margin-bottom: 8px !important;
 }
 
 .mao-hero-greeting {
-  font-size: 1.15rem !important;
-  line-height: 1.25 !important;
-  margin-bottom: 2px !important;
+  font-size: 1.25rem !important;
+  line-height: 1.3 !important;
+  margin-bottom: 3px !important;
 }
 
 .mao-hero-sub {
-  font-size: 11px !important;
-  line-height: 1.25 !important;
-  margin-bottom: 6px !important;
-  opacity: 0.75 !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  margin-bottom: 10px !important;
+  opacity: 0.8 !important;
 }
 
 /* 用户定制：删除资产总值和活跃连接两个卡片 */
@@ -4236,59 +4238,59 @@
   display: none !important;
 }
 
-/* 用户定制：2x2 四宫格紧凑布局 */
+/* 用户定制：2x2 四宫格布局，卡片高度舒适完全展示 */
 .mao-stat-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 6px !important;
+  gap: 10px !important;
   margin-top: auto !important;
 }
 
 .mao-stat-card {
-  padding: 6px 10px !important;
-  min-height: 52px !important;
-  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  min-height: 64px !important;
+  border-radius: 12px !important;
 }
 
 .mao-stat-card .mao-stat-head {
-  margin-bottom: 2px !important;
+  margin-bottom: 3px !important;
 }
 
 .mao-stat-card .mao-stat-label {
-  font-size: 11px !important;
+  font-size: 11.5px !important;
 }
 
 .mao-stat-card .mao-stat-value {
-  font-size: 1.15rem !important;
+  font-size: 1.25rem !important;
   line-height: 1.2 !important;
 }
 
 .mao-stat-card .mao-stat-caption {
-  font-size: 10px !important;
-  line-height: 1.2 !important;
+  font-size: 10.5px !important;
+  line-height: 1.25 !important;
 }
 
-/* 用户定制：右侧地图卡片纵向压缩，紧凑圆角 */
+/* 右侧地图卡片：适当收窄且纵向舒展 */
 .server-world-map-card {
-  max-height: 275px !important;
-  min-height: 260px !important;
+  min-height: 335px !important;
+  max-height: 350px !important;
   height: 100% !important;
-  padding: 8px 12px 6px 12px !important;
+  padding: 12px 16px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  border-radius: 18px !important;
+  border-radius: 20px !important;
 }
 
 /* 顶部紧凑状态栏 */
 .mao-cluster-mini-summary {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: rgba(0, 0, 0, 0.03);
-  padding: 3px 8px;
-  border-radius: 8px;
+  padding: 4px 10px;
+  border-radius: 9px;
   border: 1px solid rgba(0, 0, 0, 0.04);
-  font-size: 11px;
+  font-size: 11.5px;
 }
 :root[data-appearance="dark"] .mao-cluster-mini-summary {
   background: rgba(255, 255, 255, 0.03);
@@ -4297,7 +4299,7 @@
 .mao-node-blocks.is-compact {
   display: flex;
   align-items: center;
-  gap: 2.5px;
+  gap: 3px;
   flex-wrap: wrap;
   max-width: 140px;
 }

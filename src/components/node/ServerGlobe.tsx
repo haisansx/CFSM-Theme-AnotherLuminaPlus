@@ -21,41 +21,41 @@ interface MapLocation {
   onlineCount: number;
 }
 
-// Precise dot coordinates mapped directly to world-map.svg (1280x621)
-// Authenticated against the Pacific coastline dots in world-map.svg
+// Precise dot coordinates mapped directly to world-map.svg (viewBox 0 0 201 97, canvas 1280x621)
+// Calibrated directly against authentic dot centers in world-map.svg
 const CITY_KEYWORDS: [string[], string, number, number, string, LabelPosition][] = [
-  // West Coast USA (Pacific Coastline dots: Oregon north, San Jose mid-coast, LA south)
-  [["oregon", "俄勒冈", "pdx"], "PDX", 98, 170, "俄勒冈", "top"],
-  [["san jose", "sanjose", "圣何塞"], "SJC", 92, 194, "圣何塞", "left"],
-  [["los angeles", "la", "洛杉矶"], "LAX", 104, 212, "洛杉矶", "bottom"],
-  [["seattle", "西雅图", "sea"], "SEA", 105, 158, "西雅图", "top"],
+  // West Coast USA (Pacific Coast dots: Oregon cx=15/cy=27, San Jose cx=15/cy=30, LA cx=16/cy=33, Seattle cx=16/cy=25)
+  [["oregon", "俄勒冈", "pdx"], "PDX", 96, 173, "俄勒冈", "top"],
+  [["san jose", "sanjose", "圣何塞"], "SJC", 96, 192, "圣何塞", "left"],
+  [["los angeles", "la", "洛杉矶"], "LAX", 102, 211, "洛杉矶", "bottom"],
+  [["seattle", "西雅图", "sea"], "SEA", 102, 160, "西雅图", "top"],
 
   // Central & East USA
   [["chicago", "芝加哥"], "ORD", 220, 175, "芝加哥", "top"],
-  [["new york", "nyc", "纽约"], "NYC", 274, 182, "纽约", "right"],
-  [["miami", "迈阿密"], "MIA", 286, 236, "迈阿密", "bottom"],
-  [["dallas", "达拉斯"], "DFW", 196, 225, "达拉斯", "bottom"],
+  [["new york", "nyc", "纽约"], "NYC", 280, 179, "纽约", "right"],
+  [["miami", "迈阿密"], "MIA", 237, 249, "迈阿密", "bottom"],
+  [["dallas", "达拉斯"], "DFW", 172, 211, "达拉斯", "bottom"],
 
-  // Europe
-  [["london", "伦敦"], "LON", 635, 130, "伦敦", "top"],
-  [["paris", "巴黎"], "CDG", 643, 155, "巴黎", "left"],
-  [["frankfurt", "法兰克福", "euserv"], "FRA", 668, 157, "法兰克福", "top"],
-  [["nürnberg", "nurnberg", "纽伦堡", "netcup"], "NUE", 678, 170, "纽伦堡", "bottom"],
+  // Europe (London cx=99/cy=21, Paris cx=101/cy=25, Frankfurt cx=105/cy=25, Nürnberg cx=106/cy=27)
+  [["london", "伦敦"], "LON", 630, 134, "伦敦", "top"],
+  [["paris", "巴黎"], "CDG", 643, 160, "巴黎", "left"],
+  [["frankfurt", "法兰克福", "euserv"], "FRA", 669, 160, "法兰克福", "top"],
+  [["nürnberg", "nurnberg", "纽伦堡", "netcup"], "NUE", 675, 173, "纽伦堡", "bottom"],
   [["amsterdam", "阿姆斯特丹"], "AMS", 650, 148, "阿姆斯特丹", "top"],
 
-  // South America
-  [["sao paulo", "saopaulo", "são paulo", "圣保罗", "brazil", "brasil"], "GRU", 398, 460, "圣保罗", "bottom"],
+  // South America (São Paulo cx=62/cy=72)
+  [["sao paulo", "saopaulo", "são paulo", "圣保罗", "brazil", "brasil"], "GRU", 395, 461, "圣保罗", "bottom"],
 
-  // Asia & Oceania
+  // Asia & Oceania (Tokyo cx=173/cy=32, HK cx=161/cy=41, Singapore cx=157/cy=54, Sydney cx=185/cy=79)
   [["tokyo", "东京"], "TYO", 1102, 205, "东京", "right"],
   [["osaka", "大阪"], "OSA", 1092, 214, "大阪", "left"],
-  [["hongkong", "hong kong", "香港", "hk", "hytron"], "HKG", 1025, 259, "香港", "bottom"],
+  [["hongkong", "hong kong", "香港", "hk", "hytron"], "HKG", 1025, 262, "香港", "bottom"],
   [["taiwan", "taipei", "台湾", "台北"], "TPE", 1045, 252, "台北", "right"],
-  [["singapore", "新加坡", "sg"], "SIN", 1006, 345, "新加坡", "bottom"],
+  [["singapore", "新加坡", "sg"], "SIN", 1000, 346, "新加坡", "bottom"],
   [["seoul", "首尔", "kr"], "SEL", 1070, 198, "首尔", "top"],
   [["beijing", "北京"], "PEK", 1015, 178, "北京", "top"],
   [["shanghai", "上海"], "PVG", 1045, 225, "上海", "right"],
-  [["sydney", "悉尼"], "SYD", 1180, 505, "悉尼", "bottom"]
+  [["sydney", "悉尼"], "SYD", 1178, 506, "悉尼", "bottom"]
 ];
 
 function resolveServerLocation(
@@ -65,7 +65,7 @@ function resolveServerLocation(
   const nameLower = (displayName || "").toLowerCase();
   const regUpper = (node.region || "US").toUpperCase();
 
-  // 1. Check city keywords first (prioritize accurate display name match)
+  // 1. Check city keywords first
   for (const [keywords, code, x, y, cname, pos] of CITY_KEYWORDS) {
     if (keywords.some((k) => nameLower.includes(k))) {
       return { code, name: cname, x, y, pos };
@@ -98,12 +98,12 @@ function resolveServerLocation(
     };
   }
 
-  // 3. Fallback coordinate (US West Coast strictly on Pacific dots)
+  // 3. Fallback coordinate (US West Coast on Pacific dot)
   return {
     code: "US",
     name: "美国",
-    x: 104,
-    y: 212,
+    x: 102,
+    y: 211,
     pos: "bottom"
   };
 }
@@ -149,21 +149,21 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
           bottom: "100%",
           left: "50%",
           transform: "translateX(-50%)",
-          marginBottom: "8px"
+          marginBottom: "7px"
         };
       case "left":
         return {
           right: "100%",
           top: "50%",
           transform: "translateY(-50%)",
-          marginRight: "9px"
+          marginRight: "8px"
         };
       case "right":
         return {
           left: "100%",
           top: "50%",
           transform: "translateY(-50%)",
-          marginLeft: "9px"
+          marginLeft: "8px"
         };
       case "bottom":
       default:
@@ -171,7 +171,7 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
           top: "100%",
           left: "50%",
           transform: "translateX(-50%)",
-          marginTop: "8px"
+          marginTop: "7px"
         };
     }
   };
@@ -187,7 +187,7 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
       onClick={() => setActiveTooltipKey(null)}
     >
       {/* Top Header - Font size enlarged by +25% */}
-      <div className="flex items-center justify-between px-3 pt-1 pb-1 z-20 pointer-events-none">
+      <div className="flex items-center justify-between px-4 pt-2.5 pb-1 z-20 pointer-events-none">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[#facc15] shadow-[0_0_8px_#facc15]" />
           <span className="text-[14px] font-bold text-white tracking-wide uppercase">
@@ -199,14 +199,12 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
         </div>
       </div>
 
-      {/* Main Map Container: Vertically compressed & horizontally stretched to save vertical height */}
-      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden min-h-[190px] max-h-[225px]">
+      {/* Main Map Container: Perfectly aligned 1:1 canvas using native SVG aspect ratio */}
+      <div className="relative w-full flex-1 flex items-center justify-center p-2.5 overflow-hidden">
         <div
-          className="relative w-full h-full"
+          className="relative w-full h-full max-w-full max-h-full"
           style={{
-            maxWidth: "100%",
-            maxHeight: "100%",
-            aspectRatio: "1280 / 530"
+            aspectRatio: "201 / 97"
           }}
         >
           {/* SVG Dotted Matrix World Map Background */}
@@ -219,7 +217,7 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
             }}
           />
 
-          {/* Location Points & Badges */}
+          {/* Location Points & Badges: Positioned strictly on dots with identical 1280x621 (201x97) coordinates */}
           {locations.map((loc) => {
             const leftPct = (loc.x / 1280) * 100;
             const topPct = (loc.y / 621) * 100;
@@ -248,8 +246,8 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
                   <span
                     className="absolute rounded-full border border-[#facc15] animate-ping pointer-events-none"
                     style={{
-                      width: "19px",
-                      height: "19px",
+                      width: "18px",
+                      height: "18px",
                       opacity: 0.65
                     }}
                   />
@@ -257,8 +255,8 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
                   <span
                     className="absolute rounded-full border-[1.5px] border-[#facc15] pointer-events-none"
                     style={{
-                      width: "13.5px",
-                      height: "13.5px"
+                      width: "13px",
+                      height: "13px"
                     }}
                   />
                   {/* Core yellow dot */}

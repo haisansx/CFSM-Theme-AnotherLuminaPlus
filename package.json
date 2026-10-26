@@ -1,7 +1,7 @@
 {
   "name": "cfsm-theme-anotherluminaplus",
   "private": true,
-  "version": "1.9.15",
+  "version": "1.9.16",
   "type": "module",
   "description": "CFSM-Theme-AnotherLuminaPlus: a CF-Server-Monitor theme based on CFSM-Theme-LuminaPlus (ported from Komari-Theme-LuminaPlus), styled after CFSM-SAO by WAOR",
   "author": "Vegas7 (based on LuminaPlus by codex&shark&shanyang and SAO by WAOR)",
