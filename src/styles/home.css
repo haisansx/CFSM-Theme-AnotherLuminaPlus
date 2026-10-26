@@ -4151,6 +4151,7 @@
 
 
 
+
 /* 用户定制：隐藏服务器集群大横幅，下方直接展示 VPS 卡片 */
 .mao-section-header,
 .mao-cluster-card > .mao-section-header,
@@ -4177,18 +4178,56 @@
   display: none !important;
 }
 
-/* 用户定制：左侧监控总览再度收窄至 340px，腾出超大空间给右侧世界地图 */
+/* 用户定制：左侧选项卡横向拉伸至 440px，整体高度压缩至 275px，腾出纵向空间展现第一排 VPS 卡片 */
 .mao-dashboard-hero {
   display: grid !important;
-  grid-template-columns: 340px minmax(0, 1fr) !important;
-  gap: 16px !important;
+  grid-template-columns: 440px minmax(0, 1fr) !important;
+  gap: 12px !important;
   align-items: stretch !important;
+  max-height: 275px !important;
+  min-height: 260px !important;
+  margin-bottom: 12px !important;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .mao-dashboard-hero {
+    grid-template-columns: 380px minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 900px) {
   .mao-dashboard-hero {
     grid-template-columns: 1fr !important;
+    max-height: none !important;
+    min-height: auto !important;
   }
+}
+
+/* 用户定制：左侧卡片压扁紧凑，内边距压缩 */
+.mao-hero-main {
+  padding: 10px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  max-height: 275px !important;
+  overflow: hidden !important;
+}
+
+.mao-hero-header {
+  margin-bottom: 3px !important;
+}
+
+.mao-hero-greeting {
+  font-size: 1.15rem !important;
+  line-height: 1.25 !important;
+  margin-bottom: 2px !important;
+}
+
+.mao-hero-sub {
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+  margin-bottom: 6px !important;
+  opacity: 0.75 !important;
 }
 
 /* 用户定制：删除资产总值和活跃连接两个卡片 */
@@ -4197,21 +4236,59 @@
   display: none !important;
 }
 
-/* 用户定制：2x2 四宫格布局 */
+/* 用户定制：2x2 四宫格紧凑布局 */
 .mao-stat-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 10px !important;
+  gap: 6px !important;
+  margin-top: auto !important;
+}
+
+.mao-stat-card {
+  padding: 6px 10px !important;
+  min-height: 52px !important;
+  border-radius: 10px !important;
+}
+
+.mao-stat-card .mao-stat-head {
+  margin-bottom: 2px !important;
+}
+
+.mao-stat-card .mao-stat-label {
+  font-size: 11px !important;
+}
+
+.mao-stat-card .mao-stat-value {
+  font-size: 1.15rem !important;
+  line-height: 1.2 !important;
+}
+
+.mao-stat-card .mao-stat-caption {
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+}
+
+/* 用户定制：右侧地图卡片纵向压缩，紧凑圆角 */
+.server-world-map-card {
+  max-height: 275px !important;
+  min-height: 260px !important;
+  height: 100% !important;
+  padding: 8px 12px 6px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  border-radius: 18px !important;
 }
 
 /* 顶部紧凑状态栏 */
 .mao-cluster-mini-summary {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   background: rgba(0, 0, 0, 0.03);
-  padding: 5px 12px;
-  border-radius: 10px;
+  padding: 3px 8px;
+  border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.04);
+  font-size: 11px;
 }
 :root[data-appearance="dark"] .mao-cluster-mini-summary {
   background: rgba(255, 255, 255, 0.03);
@@ -4220,7 +4297,7 @@
 .mao-node-blocks.is-compact {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2.5px;
   flex-wrap: wrap;
   max-width: 140px;
 }
