@@ -857,3 +857,23 @@
 .mini-node-card:not(.is-offline) .node-card-head:hover:not(:has([data-detail-click="off"]:hover)) .mini-node-title {
   color: var(--progress-cpu);
 }
+
+.server-card-os-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.85;
+  margin-right: 2px;
+  transition: opacity 160ms ease, color 160ms ease;
+}
+:root[data-appearance="dark"] .server-card-os-label {
+  color: var(--text-tertiary);
+}
+.server-card:hover .server-card-os-label {
+  opacity: 1;
+  color: var(--text-secondary);
+}

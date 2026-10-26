@@ -281,3 +281,21 @@ export const OsLogo = memo(function OsLogo({
     />
   );
 });
+
+
+/**
+ * 格式化精简操作系统全称（如 Debian 13、Arch Linux、AlmaLinux 9.8、Alpine 3.24、FreeBSD 14.5）
+ */
+export function formatOsLabel(osString?: string | null): string {
+  if (!osString) return "";
+  let s = osString.trim();
+  s = s.replace(/GNU\/Linux\s*/i, "");
+  s = s.replace(/\s*\([^)]*\)/g, "");
+  s = s.replace(/-RELEASE/i, "");
+  s = s.replace(/Alpine Linux\s*v?/i, "Alpine ");
+  s = s.replace(/CentOS Stream\s*/i, "CentOS ");
+  s = s.replace(/v(\d+(\.\d+)*)/i, "$1");
+  s = s.replace(/\s+LTS/i, "");
+  s = s.replace(/\s+/g, " ").trim();
+  return s;
+}

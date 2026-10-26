@@ -1,3 +1,4 @@
+import { ServerGlobe } from "./ServerGlobe";
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -17,7 +18,6 @@ import {
 } from "lucide-react";
 import { StatMetricIcon } from "../ui/StatMetricIcon";
 import { DraggableCostBall } from "@/components/node/DraggableCostBall";
-import { ClusterHeatmap } from "./ClusterHeatmap";
 import { useAuth } from "@/hooks/useAuth";
 import { getLocalThemeSettings, saveLocalThemeSettings } from "@/services/themeSettingsStore";
 import {
@@ -59,7 +59,6 @@ import {
 import { CompactNodeCard } from "./CompactNodeCard";
 import { MiniNodeCard } from "./MiniNodeCard";
 import { NodeCard } from "./NodeCard";
-import { OverviewTrafficChart } from "./OverviewTrafficChart";
 import { NodeListView } from "./NodeListView";
 import { RegionTabs } from "./RegionTabs";
 import { RenewalReminder } from "./RenewalReminder";
@@ -240,12 +239,12 @@ function HomeOverviewCards({
   loggedIn,
   visibleNodes,
   nameByUuid,
-  clusterOverviewMode = "classic",
+  clusterOverviewMode: _clusterOverviewMode = "classic",
   matrixColorTheme = "default",
-  matrixMockFill = false,
-  matrixBootAnimation = true,
-  matrixBootEffect = "laser-scan",
-  matrixCustomPattern = null,
+  matrixMockFill: _matrixMockFill = false,
+  matrixBootAnimation: _matrixBootAnimation = true,
+  matrixBootEffect: _matrixBootEffect = "laser-scan",
+  matrixCustomPattern: _matrixCustomPattern = null,
 }: {
   overview: HomeOverview;
   costSummary: { remainingCny: number; totalOriginalPriceCny?: number } | null;
@@ -372,9 +371,64 @@ function HomeOverviewCards({
       {/* 左侧主要区域：问候语 + 6 宫格指标小卡片 */}
       <div className="mao-hero-main">
         <div className="mao-hero-header">
-          <div className="mao-badge">
-            <Sparkles size={12} className="text-(--text-primary)" />
-            <span>{t("监控总览")}</span>
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
+            <div className="flex items-center gap-2">
+              <div className="mao-badge">
+                <Sparkles size={12} className="text-(--text-primary)" />
+                <span>{t("监控总览")}</span>
+              </div>
+              <span className={`mao-status-pill ${isAllHealthy ? "is-healthy" : "is-warning"}`}>
+                <span className="mao-status-dot" />
+                {isAllHealthy ? t("状态健康") : overview.totalNodes === 0 ? t("未连接") : t("存在离线 ({n})", { n: overview.offlineNodes })}
+              </span>
+              {bandwidthRating && (
+                <span
+                  className="overview-card-rating is-bandwidth-badge"
+                  data-rating-level={bandwidthRating.level}
+                  title={t("全站实时带宽评级: {label}", { label: t(bandwidthRating.label) })}
+                >
+                  <span className="mao-status-dot" />
+                  {t(bandwidthRating.label)}
+                </span>
+              )}
+            </div>
+
+            <div className="mao-cluster-mini-summary flex items-center gap-3 text-xs text-(--text-secondary) flex-wrap">
+              <div className="flex items-center gap-1.5">
+                <Activity size={13} className="text-(--text-primary)" />
+                <span className="font-bold text-sm text-(--text-primary)">{onlinePct.toFixed(0)}%</span>
+                <span>{t("在线率")}</span>
+              </div>
+              <div className="mao-node-blocks is-compact" role="presentation">
+                {overview.totalNodes > 0 ? (
+                  Array.from({ length: overview.totalNodes }, (_, i) => {
+                    const isOnline = i < overview.onlineNodes;
+                    const isOffline = i >= overview.totalNodes - overview.offlineNodes;
+                    const statusClass = isOnline
+                      ? "is-online"
+                      : isOffline
+                        ? "is-offline"
+                        : "is-unknown";
+                    return (
+                      <span
+                        key={i}
+                        className={`mao-node-block ${statusClass}`}
+                        title={t("服务器 {n}: {status}", { n: i + 1, status: isOnline ? t("在线") : isOffline ? t("离线") : t("未知") })}
+                      />
+                    );
+                  })
+                ) : (
+                  <span className="mao-node-block is-unknown" />
+                )}
+              </div>
+              <span className="text-[11px] text-(--text-tertiary)">
+                {overview.onlineNodes}/{overview.totalNodes} {t("在线")}
+              </span>
+              <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-black/10 dark:border-white/10 text-[11px]">
+                <span className="text-(--speed-up, #38bdf8)">↑ {formatBytes(overview.netUp)}/s</span>
+                <span className="text-(--speed-down, #34d399)">↓ {formatBytes(overview.netDown)}/s</span>
+              </div>
+            </div>
           </div>
           <h1 className="mao-hero-greeting flex items-center gap-1.5 flex-wrap">
             <span>{greetingInfo.greeting}{t("，")}</span>
@@ -597,136 +651,7 @@ function HomeOverviewCards({
 
       {/* 右侧集群状态区域 */}
       <div className="mao-hero-side">
-        <div
-          className="mao-progress-container"
-          data-palette={matrixColorTheme || "default"}
-        >
-          <div className="mao-progress-head">
-            <div className="mao-progress-title-wrap">
-              <h3 className="mao-progress-title">
-                <Activity size={17} className="text-(--text-primary)" />
-                <span>{t("集群状态")}</span>
-              </h3>
-              <p className="mao-progress-subtitle">
-                {clusterOverviewMode === "classic"
-                  ? t("服务器在线率与实时网络吞吐")
-                  : t("全节点实时负载与机架全景")}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap justify-end">
-
-              <span className={`mao-status-pill ${isAllHealthy ? "is-healthy" : "is-warning"}`}>
-                <span className="mao-status-dot" />
-                {isAllHealthy ? t("状态健康") : overview.totalNodes === 0 ? t("未连接") : t("存在离线 ({n})", { n: overview.offlineNodes })}
-              </span>
-              {bandwidthRating && (
-                <span
-                  className="overview-card-rating is-bandwidth-badge"
-                  data-rating-level={bandwidthRating.level}
-                  title={t("全站实时带宽评级: {label}", { label: t(bandwidthRating.label) })}
-                >
-                  <span className="mao-status-dot" />
-                  {t(bandwidthRating.label)}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* 根据集群状态展示设置，分别呈现「经典布局」或「独立全屏版面」 */}
-          {clusterOverviewMode === "classic" ? (
-            <>
-              {/* 进度模块 1：服务器在线状态 */}
-              <div className="mao-progress-section">
-                <div className="mao-progress-section-header">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="mao-progress-big-num">{onlinePct.toFixed(0)}%</span>
-                    <span className="mao-progress-unit-label">{t("在线率")}</span>
-                  </div>
-                  <div className="mao-progress-tag-box">
-                    <span className="mao-progress-tag-label">{t("离线服务器")}</span>
-                    <span className="mao-progress-tag-val">{t("{n} 台", { n: overview.offlineNodes })}</span>
-                  </div>
-                </div>
-                {/* 节点展示：达到 51 台时切换为纯无缝一体化进度条，少于 51 台时呈现经典胶囊块 */}
-                {overview.totalNodes >= 51 ? (
-                  <div
-                    className="mao-seamless-progress"
-                    role="progressbar"
-                    aria-valuenow={Math.round(onlinePct)}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    title={t("在线: {online} 台 ({pct}%) · 离线: {offline} 台", { online: overview.onlineNodes, pct: onlinePct.toFixed(1), offline: overview.offlineNodes })}
-                  >
-                    <div
-                      className="mao-seamless-segment is-online"
-                      style={{ width: `${onlinePct}%` }}
-                    />
-                    {overview.offlineNodes > 0 && (
-                      <div
-                        className="mao-seamless-segment is-offline"
-                        style={{
-                          width: `${(overview.offlineNodes / overview.totalNodes) * 100}%`,
-                        }}
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <div className="mao-node-blocks" role="presentation">
-                    {overview.totalNodes > 0 ? (
-                      Array.from({ length: overview.totalNodes }, (_, i) => {
-                        const isOnline = i < overview.onlineNodes;
-                        const isOffline = i >= overview.totalNodes - overview.offlineNodes;
-                        const statusClass = isOnline
-                          ? "is-online"
-                          : isOffline
-                            ? "is-offline"
-                            : "is-unknown";
-                        return (
-                          <span
-                            key={i}
-                            className={`mao-node-block ${statusClass}`}
-                            title={t("服务器 {n}: {status}", { n: i + 1, status: isOnline ? t("在线") : isOffline ? t("离线") : t("未知") })}
-                          />
-                        );
-                      })
-                    ) : (
-                      <span className="mao-node-block is-unknown" />
-                    )}
-                  </div>
-                )}
-                <div className="mao-progress-section-footer">
-                  <span>{t("在线 {n} 台", { n: overview.onlineNodes })}</span>
-                  <span>{t("总计 {n} 台", { n: overview.totalNodes })}</span>
-                </div>
-              </div>
-
-              {/* 进度模块 2：实时动态网络曲线图 */}
-              <OverviewTrafficChart
-                netUp={overview.netUp}
-                netDown={overview.netDown}
-              />
-            </>
-          ) : (
-            /* 矩阵布局：整屏呈现服务器机架方格热力矩阵 */
-            <div className="mao-cluster-body-wrap">
-              <div className="mao-cluster-pane">
-                <ClusterHeatmap
-                  nodes={visibleNodes}
-                  nameByUuid={nameByUuid}
-                  onlinePct={onlinePct}
-                  onlineNodes={overview.onlineNodes}
-                  offlineNodes={overview.offlineNodes}
-                  totalNodes={overview.totalNodes}
-                  colorTheme={matrixColorTheme}
-                  mockFill={matrixMockFill}
-                  bootAnimation={matrixBootAnimation}
-                  bootEffect={matrixBootEffect}
-                  customPattern={matrixCustomPattern}
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        <ServerGlobe nodes={visibleNodes} nameByUuid={nameByUuid} />
       </div>
     </section>
   );

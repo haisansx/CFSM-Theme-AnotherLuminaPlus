@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import { Flag } from "@/components/ui/Flag";
-import { OsLogo } from "@/components/ui/OsLogo";
+import {  OsLogo , formatOsLabel } from "@/components/ui/OsLogo";
 import { useNodeCardModel } from "@/hooks/useNodeCardModel";
 import { useThemeSettings } from "@/hooks/useThemeSettings";
 import { formatBytes } from "@/utils/format";
@@ -379,6 +379,11 @@ function CompactNodeHeader({
       </div>
       <div className="compact-node-actions">
         {/* 只是个图标：整块头部都能点进详情（见 useNodeDetailClick），这里不再单独做链接。 */}
+        {node.os && (
+          <span className="compact-node-os-label" title={node.os}>
+            {formatOsLabel(node.os)}
+          </span>
+        )}
         <span
           className="compact-node-detail-link"
           title={detailLabels.title}

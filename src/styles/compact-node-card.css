@@ -744,3 +744,23 @@
     gap: 7px;
   }
 }
+
+.compact-node-os-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.85;
+  margin-right: 2px;
+  transition: opacity 160ms ease, color 160ms ease;
+}
+:root[data-appearance="dark"] .compact-node-os-label {
+  color: var(--text-tertiary);
+}
+.compact-node-card:hover .compact-node-os-label {
+  opacity: 1;
+  color: var(--text-secondary);
+}

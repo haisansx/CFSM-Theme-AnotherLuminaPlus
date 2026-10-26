@@ -28,7 +28,7 @@ import {
   trafficQuotaSegmentColor,
 } from "@/utils/metricTone";
 import { Flag } from "@/components/ui/Flag";
-import { OsLogo } from "@/components/ui/OsLogo";
+import {  OsLogo , formatOsLabel } from "@/components/ui/OsLogo";
 import { MetricBar } from "./MetricBar";
 import { LatencyBars } from "./LatencyBars";
 import { PingSparkline } from "./PingSparkline";
@@ -237,6 +237,11 @@ function NodeCardHeader({
       </div>
       <div className="server-card-actions">
         {/* 只是个图标：整块头部都能点进详情（见 useNodeDetailClick），这里不再单独做链接。 */}
+        {node.os && (
+          <span className="server-card-os-label" title={node.os}>
+            {formatOsLabel(node.os)}
+          </span>
+        )}
         <span
           className="server-card-detail-link"
           title={detailLabels.title}
