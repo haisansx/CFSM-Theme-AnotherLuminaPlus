@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import type { HomeNodeSummary } from "@/services/wsStore";
 import worldMapSvg from "./world-map.svg";
 import { codeMaps, countryCodeMapping } from "./code-maps";
@@ -22,7 +22,7 @@ interface MapLocation {
 }
 
 // Precise dot coordinates mapped directly to world-map.svg (viewBox 0 0 201 97, canvas 1280x621)
-// Calibrated directly against authentic dot centers in world-map.svg
+// Calibrated directly against authentic dot centers in world-map.svg (matching nazhua original proportions)
 const CITY_KEYWORDS: [string[], string, number, number, string, LabelPosition][] = [
   // West Coast USA (Pacific Coast dots: Oregon cx=15/cy=27, San Jose cx=15/cy=30, LA cx=16/cy=33, Seattle cx=16/cy=25)
   [["oregon", "俄勒冈", "pdx"], "PDX", 96, 173, "俄勒冈", "top"],
@@ -110,6 +110,34 @@ function resolveServerLocation(
 
 export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorldMapProps) {
   const [activeTooltipKey, setActiveTooltipKey] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Default to 1280:621 natural aspect ratio preview size
+  const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 640, height: 310 });
+
+  // Dynamically compute exact 1280:621 proportions matching nazhua's original layout
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateSize = () => {
+      if (!containerRef.current) return;
+      const cw = containerRef.current.clientWidth;
+      const ch = containerRef.current.clientHeight;
+      if (cw <= 0 || ch <= 0) return;
+
+      const targetRatio = 1280 / 621;
+      let w = cw;
+      let h = w / targetRatio;
+      if (h > ch) {
+        h = ch;
+        w = h * targetRatio;
+      }
+      setCanvasSize({ width: Math.floor(w), height: Math.floor(h) });
+    };
+
+    updateSize();
+    const ro = new ResizeObserver(updateSize);
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
 
   // Group servers by location
   const locations = useMemo(() => {
@@ -199,25 +227,29 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
         </div>
       </div>
 
-      {/* Main Map Container: Perfectly aligned 1:1 canvas using native SVG aspect ratio */}
-      <div className="relative w-full flex-1 flex items-center justify-center p-2.5 overflow-hidden">
+      {/* Main Map Container: Perfectly centered and strictly constrained to 1280:621 original proportions */}
+      <div
+        ref={containerRef}
+        className="relative w-full flex-1 flex items-center justify-center p-2 overflow-hidden"
+      >
         <div
-          className="relative w-full h-full max-w-full max-h-full"
+          className="relative"
           style={{
-            aspectRatio: "201 / 97"
+            width: `${canvasSize.width}px`,
+            height: `${canvasSize.height}px`
           }}
         >
-          {/* SVG Dotted Matrix World Map Background */}
+          {/* SVG Dotted Matrix World Map Background: Unstretched, natural aspect ratio */}
           <img
             src={worldMapSvg}
             alt="World Map"
-            className="absolute inset-0 w-full h-full object-fill pointer-events-none opacity-85 select-none"
+            className="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-85 select-none"
             style={{
               filter: "drop-shadow(0 0 1px rgba(255,255,255,0.15))"
             }}
           />
 
-          {/* Location Points & Badges: Positioned strictly on dots with identical 1280x621 (201x97) coordinates */}
+          {/* Location Points & Badges: Strictly bound to dots with exact 1280x621 proportions */}
           {locations.map((loc) => {
             const leftPct = (loc.x / 1280) * 100;
             const topPct = (loc.y / 621) * 100;
