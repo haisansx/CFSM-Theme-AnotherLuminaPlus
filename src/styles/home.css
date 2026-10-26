@@ -4168,3 +4168,23 @@
   border-color: transparent !important;
   box-shadow: none !important;
 }
+
+/* 用户定制：隐藏服务器集群大横幅，下方直接展示 VPS 卡片 */
+.mao-section-header,
+.mao-cluster-card > .mao-section-header,
+.mao-cluster-controls-wrap,
+.home-group-tabs {
+  display: none !important;
+}
+.mao-cluster-card {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  gap: 12px !important;
+}
+:root[data-appearance="dark"] .mao-cluster-card {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}

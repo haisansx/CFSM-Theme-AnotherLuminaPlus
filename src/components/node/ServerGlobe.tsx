@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from "react";
 import type { HomeNodeSummary } from "@/services/wsStore";
-import { COAST_LINES, BORDER_LINES } from "./worldMapData";
+import { COAST_LINES, COUNTRIES } from "./worldMapData";
 
 interface ServerGlobeProps {
   nodes: HomeNodeSummary[];
@@ -53,60 +53,60 @@ const CITY_LIGHTS: [number, number, number][] = [
 ];
 
 // Coordinates mapping for user's VPS locations
-const CITY_COORDS: Record<string, { lat: number; lng: number; city: string }> = {
+const CITY_COORDS: Record<string, { lat: number; lng: number; city: string; country: string }> = {
   // Brazil & Latin America
-  "sao paulo": { lat: -23.5505, lng: -46.6333, city: "São Paulo" },
-  "saopaulo": { lat: -23.5505, lng: -46.6333, city: "São Paulo" },
-  "são paulo": { lat: -23.5505, lng: -46.6333, city: "São Paulo" },
-  "圣保罗": { lat: -23.5505, lng: -46.6333, city: "São Paulo" },
-  "rio": { lat: -22.9068, lng: -43.1729, city: "Rio de Janeiro" },
-  "brazil": { lat: -23.5505, lng: -46.6333, city: "São Paulo" },
-  "brasil": { lat: -23.5505, lng: -46.6333, city: "São Paulo" },
-  "santiago": { lat: -33.4489, lng: -70.6693, city: "Santiago" },
-  "buenos aires": { lat: -34.6037, lng: -58.3816, city: "Buenos Aires" },
+  "sao paulo": { lat: -23.5505, lng: -46.6333, city: "São Paulo", country: "BR" },
+  "saopaulo": { lat: -23.5505, lng: -46.6333, city: "São Paulo", country: "BR" },
+  "são paulo": { lat: -23.5505, lng: -46.6333, city: "São Paulo", country: "BR" },
+  "圣保罗": { lat: -23.5505, lng: -46.6333, city: "São Paulo", country: "BR" },
+  "rio": { lat: -22.9068, lng: -43.1729, city: "Rio de Janeiro", country: "BR" },
+  "brazil": { lat: -23.5505, lng: -46.6333, city: "São Paulo", country: "BR" },
+  "brasil": { lat: -23.5505, lng: -46.6333, city: "São Paulo", country: "BR" },
+  "santiago": { lat: -33.4489, lng: -70.6693, city: "Santiago", country: "CL" },
+  "buenos aires": { lat: -34.6037, lng: -58.3816, city: "Buenos Aires", country: "AR" },
   // US & Canada
-  "san jose": { lat: 37.3382, lng: -121.8863, city: "San Jose" },
-  "sanjose": { lat: 37.3382, lng: -121.8863, city: "San Jose" },
-  "圣何塞": { lat: 37.3382, lng: -121.8863, city: "San Jose" },
-  "oregon": { lat: 44.0000, lng: -120.5000, city: "Oregon" },
-  "俄勒冈": { lat: 44.0000, lng: -120.5000, city: "Oregon" },
-  "los angeles": { lat: 34.0522, lng: -118.2437, city: "Los Angeles" },
-  "la": { lat: 34.0522, lng: -118.2437, city: "Los Angeles" },
-  "洛杉矶": { lat: 34.0522, lng: -118.2437, city: "Los Angeles" },
-  "seattle": { lat: 47.6062, lng: -122.3321, city: "Seattle" },
-  "chicago": { lat: 41.8781, lng: -87.6298, city: "Chicago" },
-  "new york": { lat: 40.7128, lng: -74.0060, city: "New York" },
-  "dallas": { lat: 32.7767, lng: -96.7970, city: "Dallas" },
-  "miami": { lat: 25.7617, lng: -80.1918, city: "Miami" },
-  "toronto": { lat: 43.6532, lng: -79.3832, city: "Toronto" },
+  "san jose": { lat: 37.3382, lng: -121.8863, city: "San Jose", country: "US" },
+  "sanjose": { lat: 37.3382, lng: -121.8863, city: "San Jose", country: "US" },
+  "圣何塞": { lat: 37.3382, lng: -121.8863, city: "San Jose", country: "US" },
+  "oregon": { lat: 44.0000, lng: -120.5000, city: "Oregon", country: "US" },
+  "俄勒冈": { lat: 44.0000, lng: -120.5000, city: "Oregon", country: "US" },
+  "los angeles": { lat: 34.0522, lng: -118.2437, city: "Los Angeles", country: "US" },
+  "la": { lat: 34.0522, lng: -118.2437, city: "Los Angeles", country: "US" },
+  "洛杉矶": { lat: 34.0522, lng: -118.2437, city: "Los Angeles", country: "US" },
+  "seattle": { lat: 47.6062, lng: -122.3321, city: "Seattle", country: "US" },
+  "chicago": { lat: 41.8781, lng: -87.6298, city: "Chicago", country: "US" },
+  "new york": { lat: 40.7128, lng: -74.0060, city: "New York", country: "US" },
+  "dallas": { lat: 32.7767, lng: -96.7970, city: "Dallas", country: "US" },
+  "miami": { lat: 25.7617, lng: -80.1918, city: "Miami", country: "US" },
+  "toronto": { lat: 43.6532, lng: -79.3832, city: "Toronto", country: "CA" },
   // Europe
-  "london": { lat: 51.5074, lng: -0.1278, city: "London" },
-  "伦敦": { lat: 51.5074, lng: -0.1278, city: "London" },
-  "paris": { lat: 48.8566, lng: 2.3522, city: "Paris" },
-  "巴黎": { lat: 48.8566, lng: 2.3522, city: "Paris" },
-  "nürnberg": { lat: 49.4521, lng: 11.0767, city: "Nürnberg" },
-  "nurnberg": { lat: 49.4521, lng: 11.0767, city: "Nürnberg" },
-  "纽伦堡": { lat: 49.4521, lng: 11.0767, city: "Nürnberg" },
-  "netcup": { lat: 49.4521, lng: 11.0767, city: "Nürnberg" },
-  "frankfurt": { lat: 50.1109, lng: 8.6821, city: "Frankfurt" },
-  "法兰克福": { lat: 50.1109, lng: 8.6821, city: "Frankfurt" },
-  "euserv": { lat: 50.1109, lng: 8.6821, city: "Frankfurt" },
-  "amsterdam": { lat: 52.3676, lng: 4.9041, city: "Amsterdam" },
+  "london": { lat: 51.5074, lng: -0.1278, city: "London", country: "GB" },
+  "伦敦": { lat: 51.5074, lng: -0.1278, city: "London", country: "GB" },
+  "paris": { lat: 48.8566, lng: 2.3522, city: "Paris", country: "FR" },
+  "巴黎": { lat: 48.8566, lng: 2.3522, city: "Paris", country: "FR" },
+  "nürnberg": { lat: 49.4521, lng: 11.0767, city: "Nürnberg", country: "DE" },
+  "nurnberg": { lat: 49.4521, lng: 11.0767, city: "Nürnberg", country: "DE" },
+  "纽伦堡": { lat: 49.4521, lng: 11.0767, city: "Nürnberg", country: "DE" },
+  "netcup": { lat: 49.4521, lng: 11.0767, city: "Nürnberg", country: "DE" },
+  "frankfurt": { lat: 50.1109, lng: 8.6821, city: "Frankfurt", country: "DE" },
+  "法兰克福": { lat: 50.1109, lng: 8.6821, city: "Frankfurt", country: "DE" },
+  "euserv": { lat: 50.1109, lng: 8.6821, city: "Frankfurt", country: "DE" },
+  "amsterdam": { lat: 52.3676, lng: 4.9041, city: "Amsterdam", country: "NL" },
   // Asia & Oceania
-  "tokyo": { lat: 35.6762, lng: 139.6503, city: "Tokyo" },
-  "东京": { lat: 35.6762, lng: 139.6503, city: "Tokyo" },
-  "osaka": { lat: 34.6937, lng: 135.5023, city: "Osaka" },
-  "singapore": { lat: 1.3521, lng: 103.8198, city: "Singapore" },
-  "新加坡": { lat: 1.3521, lng: 103.8198, city: "Singapore" },
-  "hongkong": { lat: 22.3193, lng: 114.1694, city: "Hong Kong" },
-  "hong kong": { lat: 22.3193, lng: 114.1694, city: "Hong Kong" },
-  "hk": { lat: 22.3193, lng: 114.1694, city: "Hong Kong" },
-  "香港": { lat: 22.3193, lng: 114.1694, city: "Hong Kong" },
-  "hytron": { lat: 22.3193, lng: 114.1694, city: "Hong Kong" },
-  "seoul": { lat: 37.5665, lng: 126.9780, city: "Seoul" },
-  "首尔": { lat: 37.5665, lng: 126.9780, city: "Seoul" },
-  "sydney": { lat: -33.8688, lng: 151.2093, city: "Sydney" },
-  "悉尼": { lat: -33.8688, lng: 151.2093, city: "Sydney" }
+  "tokyo": { lat: 35.6762, lng: 139.6503, city: "Tokyo", country: "JP" },
+  "东京": { lat: 35.6762, lng: 139.6503, city: "Tokyo", country: "JP" },
+  "osaka": { lat: 34.6937, lng: 135.5023, city: "Osaka", country: "JP" },
+  "singapore": { lat: 1.3521, lng: 103.8198, city: "Singapore", country: "SG" },
+  "新加坡": { lat: 1.3521, lng: 103.8198, city: "Singapore", country: "SG" },
+  "hongkong": { lat: 22.3193, lng: 114.1694, city: "Hong Kong", country: "HK" },
+  "hong kong": { lat: 22.3193, lng: 114.1694, city: "Hong Kong", country: "HK" },
+  "hk": { lat: 22.3193, lng: 114.1694, city: "Hong Kong", country: "HK" },
+  "香港": { lat: 22.3193, lng: 114.1694, city: "Hong Kong", country: "HK" },
+  "hytron": { lat: 22.3193, lng: 114.1694, city: "Hong Kong", country: "HK" },
+  "seoul": { lat: 37.5665, lng: 126.9780, city: "Seoul", country: "KR" },
+  "首尔": { lat: 37.5665, lng: 126.9780, city: "Seoul", country: "KR" },
+  "sydney": { lat: -33.8688, lng: 151.2093, city: "Sydney", country: "AU" },
+  "悉尼": { lat: -33.8688, lng: 151.2093, city: "Sydney", country: "AU" }
 };
 
 const COUNTRY_DEFAULTS: Record<string, { lat: number; lng: number; city: string; flag: string }> = {
@@ -142,7 +142,7 @@ function resolveLocation(node: HomeNodeSummary, name: string): NodeLocation {
   const nameLower = (name || "").toLowerCase();
   const regUpper = (node.region || "US").toUpperCase();
   
-  let matchCity: { lat: number; lng: number; city: string } | null = null;
+  let matchCity: { lat: number; lng: number; city: string; country: string } | null = null;
   for (const [key, val] of Object.entries(CITY_COORDS)) {
     if (nameLower.includes(key)) {
       matchCity = val;
@@ -150,16 +150,17 @@ function resolveLocation(node: HomeNodeSummary, name: string): NodeLocation {
     }
   }
 
-  const def = COUNTRY_DEFAULTS[regUpper] || { lat: 20, lng: 0, city: regUpper, flag: "🌐" };
+  const country = matchCity ? matchCity.country : regUpper;
+  const def = COUNTRY_DEFAULTS[country] || { lat: 20, lng: 0, city: country, flag: "🌐" };
   const lat = matchCity ? matchCity.lat : def.lat;
   const lng = matchCity ? matchCity.lng : def.lng;
   const city = matchCity ? matchCity.city : def.city;
-  const flag = getCountryFlag(regUpper);
+  const flag = getCountryFlag(country);
 
   return {
     id: node.uuid,
-    name: name || regUpper,
-    country: regUpper,
+    name: name || country,
+    country,
     flag,
     city,
     lat,
@@ -171,7 +172,8 @@ function resolveLocation(node: HomeNodeSummary, name: string): NodeLocation {
 export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const rotationRef = useRef<number>(1.2);
+  // Initial rotation angle facing Pacific / Americas
+  const rotationRef = useRef<number>(1.85);
   const isDraggingRef = useRef<boolean>(false);
   const lastMouseXRef = useRef<number>(0);
 
@@ -203,6 +205,18 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
     return Array.from(map.values());
   }, [nodes, nameByUuid]);
 
+  // Set of deployed country ISO codes
+  const deployedCountries = useMemo(() => {
+    const set = new Set<string>();
+    nodes.forEach(n => {
+      const name = nameByUuid?.get(n.uuid) || "";
+      const loc = resolveLocation(n, name);
+      if (loc.country) set.add(loc.country.toUpperCase());
+      if (n.region) set.add(n.region.toUpperCase());
+    });
+    return set;
+  }, [nodes, nameByUuid]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -214,9 +228,9 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
 
     const render = () => {
       if (!isDraggingRef.current) {
-        rotationRef.current += 0.0035; // Smooth realistic rotation
+        rotationRef.current += 0.0025; // Slow smooth rotation
       }
-      pulseTime += 0.05;
+      pulseTime += 0.04;
 
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
@@ -229,22 +243,22 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Deep Space Background with Stars & Cosmic Nebula
+      // 1. Deep Space Cosmic Background
       const spaceGrad = ctx.createRadialGradient(
         width * 0.5,
         height * 0.5,
         width * 0.1,
         width * 0.5,
         height * 0.5,
-        width * 0.7
+        width * 0.75
       );
-      spaceGrad.addColorStop(0, "#0b1220");
-      spaceGrad.addColorStop(0.6, "#060913");
-      spaceGrad.addColorStop(1, "#020408");
+      spaceGrad.addColorStop(0, "#081325");
+      spaceGrad.addColorStop(0.5, "#040915");
+      spaceGrad.addColorStop(1, "#020409");
       ctx.fillStyle = spaceGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // Stars in outer space
+      // Stars
       for (const s of stars) {
         ctx.fillStyle = `rgba(255, 255, 255, ${s.a * (0.8 + 0.2 * Math.sin(pulseTime + s.x * 20))})`;
         ctx.beginPath();
@@ -258,18 +272,18 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
       const rot = rotationRef.current;
       const tilt = 0.22;
 
-      // 2. Earth Outer Atmosphere Limb (Electric Blue ISS Space Glow)
-      const atmoGrad = ctx.createRadialGradient(cx, cy, radius * 0.95, cx, cy, radius * 1.30);
-      atmoGrad.addColorStop(0, "rgba(56, 189, 248, 0.40)");
-      atmoGrad.addColorStop(0.4, "rgba(14, 165, 233, 0.22)");
+      // 2. Earth Outer Atmosphere Limb (Cyan/Electric Blue Glow like Image 3)
+      const atmoGrad = ctx.createRadialGradient(cx, cy, radius * 0.95, cx, cy, radius * 1.32);
+      atmoGrad.addColorStop(0, "rgba(6, 182, 212, 0.45)");
+      atmoGrad.addColorStop(0.35, "rgba(14, 165, 233, 0.22)");
       atmoGrad.addColorStop(0.7, "rgba(2, 132, 199, 0.08)");
       atmoGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
       ctx.fillStyle = atmoGrad;
       ctx.beginPath();
-      ctx.arc(cx, cy, radius * 1.30, 0, Math.PI * 2);
+      ctx.arc(cx, cy, radius * 1.32, 0, Math.PI * 2);
       ctx.fill();
 
-      // 3. Realistic 3D Earth Surface (Deep Oceanic Blue & Curved Space Horizon)
+      // 3. Realistic 3D Earth Surface (Deep Blue-Black Ocean)
       const earthGrad = ctx.createRadialGradient(
         cx - radius * 0.35,
         cy - radius * 0.35,
@@ -278,47 +292,57 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
         cy,
         radius
       );
-      earthGrad.addColorStop(0, "#0f2347");
-      earthGrad.addColorStop(0.5, "#091730");
-      earthGrad.addColorStop(0.85, "#040c1c");
-      earthGrad.addColorStop(1, "#020610");
+      earthGrad.addColorStop(0, "#0d213f");
+      earthGrad.addColorStop(0.5, "#07142b");
+      earthGrad.addColorStop(0.85, "#030a17");
+      earthGrad.addColorStop(1, "#01050d");
 
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fillStyle = earthGrad;
       ctx.fill();
 
-      // Thin sharp atmospheric horizon ring
-      ctx.strokeStyle = "rgba(56, 189, 248, 0.65)";
-      ctx.lineWidth = 1.4;
+      // Sharp Cyan Horizon Edge
+      ctx.strokeStyle = "rgba(34, 211, 238, 0.75)";
+      ctx.lineWidth = 1.6;
       ctx.stroke();
 
-      // 3D Projection Formula
+      // 3D Spherical Projection Formula
+      // Standard geographic spherical projection:
+      // x: East (+X) / West (-X)
+      // y: North (+Y) / South (-Y)
+      // z: Front (+Z) / Back (-Z)
       const cosT = Math.cos(tilt);
       const sinT = Math.sin(tilt);
 
-      const project = (lng: number, lat: number): { x: number; y: number; z: number } => {
+      const project = (lng: number, lat: number, alt: number = 0): { x: number; y: number; z: number } => {
         const phi = (90 - lat) * (Math.PI / 180);
         const theta = (lng * (Math.PI / 180)) + rot;
 
-        const x = Math.sin(phi) * Math.cos(theta);
+        const x = Math.sin(phi) * Math.sin(theta);
         const y = Math.cos(phi);
-        const z = Math.sin(phi) * Math.sin(theta);
+        const z = Math.sin(phi) * Math.cos(theta);
 
         const y2 = y * cosT - z * sinT;
         const z2 = y * sinT + z * cosT;
 
+        const r = radius * (1 + alt);
         return {
-          x: cx + x * radius,
-          y: cy - y2 * radius,
+          x: cx + x * r,
+          y: cy - y2 * r,
           z: z2
         };
       };
 
-      // 4. Graticule (Subtle Lat/Lng navigation lines)
-      ctx.strokeStyle = "rgba(148, 163, 184, 0.12)";
-      ctx.lineWidth = 0.7;
+      // Clip all land/polygons inside the Earth disc
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius - 0.5, 0, Math.PI * 2);
+      ctx.clip();
 
+      // 4. Subtle Latitude/Longitude Graticule
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.08)";
+      ctx.lineWidth = 0.6;
       for (let lat = -60; lat <= 60; lat += 30) {
         ctx.beginPath();
         let isDrawing = false;
@@ -334,28 +358,15 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
         ctx.stroke();
       }
 
-      for (let lng = -180; lng < 180; lng += 30) {
-        ctx.beginPath();
-        let isDrawing = false;
-        for (let lat = -80; lat <= 80; lat += 4) {
-          const p = project(lng, lat);
-          if (p.z > 0.01) {
-            if (!isDrawing) { ctx.moveTo(p.x, p.y); isDrawing = true; }
-            else ctx.lineTo(p.x, p.y);
-          } else {
-            isDrawing = false;
-          }
-        }
-        ctx.stroke();
-      }
-
-      // Polyline drawer
-      const drawPolyline = (line: [number, number][]) => {
+      // 5. Global Coastlines (Subtle High-Tech Cyan Contours)
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.28)";
+      ctx.lineWidth = 1.1;
+      for (const line of COAST_LINES) {
         let isDrawing = false;
         for (let i = 0; i < line.length; i++) {
           const [lng, lat] = line[i];
           const p = project(lng, lat);
-          if (p.z > 0.01) {
+          if (p.z > 0.02) {
             if (!isDrawing) {
               ctx.beginPath();
               ctx.moveTo(p.x, p.y);
@@ -373,25 +384,56 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
         if (isDrawing) {
           ctx.stroke();
         }
-      };
-
-      // 5. Standard Coastlines (Continental boundaries in vivid cyan)
-      ctx.strokeStyle = "rgba(56, 189, 248, 0.65)";
-      ctx.lineWidth = 1.35;
-      for (const line of COAST_LINES) {
-        drawPolyline(line);
       }
 
-      // 6. Standard Country Borders (Geopolitical boundaries in dashed amber)
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.45)";
-      ctx.lineWidth = 0.95;
-      ctx.setLineDash([3, 3]);
-      for (const line of BORDER_LINES) {
-        drawPolyline(line);
-      }
-      ctx.setLineDash([]);
+      // 6. Highlighted Deployed Countries (Exact Image 3 Cyan Style!)
+      for (const code of deployedCountries) {
+        const country = COUNTRIES[code];
+        if (!country) continue;
 
-      // 7. Night City Lights ("夜间灯火" - Golden Urban Clusters from Space)
+        for (const ring of country.rings) {
+          // Check if ring has points on visible hemisphere
+          let frontCount = 0;
+          for (let i = 0; i < ring.length; i += 2) {
+            const p = project(ring[i][0], ring[i][1]);
+            if (p.z > 0.02) frontCount++;
+          }
+          if (frontCount < 2) continue;
+
+          // Draw filled country polygon
+          ctx.beginPath();
+          let started = false;
+          for (let i = 0; i < ring.length; i++) {
+            const [lng, lat] = ring[i];
+            const p = project(lng, lat);
+            if (p.z > 0.01) {
+              if (!started) {
+                ctx.moveTo(p.x, p.y);
+                started = true;
+              } else {
+                ctx.lineTo(p.x, p.y);
+              }
+            }
+          }
+
+          if (started) {
+            ctx.closePath();
+            // Luminous Cyan Fill (Image 3)
+            ctx.fillStyle = "rgba(6, 182, 212, 0.32)";
+            ctx.fill();
+
+            // Glowing Cyan Boundary Stroke (Image 3)
+            ctx.strokeStyle = "#00f0ff";
+            ctx.lineWidth = 1.8;
+            ctx.shadowColor = "#00f0ff";
+            ctx.shadowBlur = 6;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+          }
+        }
+      }
+
+      // 7. Night City Lights ("夜间灯火" - Space View)
       for (const [lng, lat, intensity] of CITY_LIGHTS) {
         const p = project(lng, lat);
         if (p.z > 0.03) {
@@ -399,17 +441,15 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
           const flicker = 0.85 + 0.15 * Math.sin(pulseTime * 2 + lng);
           const alpha = zFactor * intensity * flicker;
 
-          // Warm golden bloom halo
           const bloom = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 4.5);
           bloom.addColorStop(0, `rgba(254, 240, 138, ${alpha * 0.9})`);
-          bloom.addColorStop(0.5, `rgba(245, 158, 11, ${alpha * 0.5})`);
+          bloom.addColorStop(0.5, `rgba(245, 158, 11, ${alpha * 0.45})`);
           bloom.addColorStop(1, "rgba(245, 158, 11, 0)");
           ctx.fillStyle = bloom;
           ctx.beginPath();
           ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
           ctx.fill();
 
-          // Intense core city light
           ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
           ctx.beginPath();
           ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
@@ -417,65 +457,188 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
         }
       }
 
-      // 8. Active Deployed VPS Location Beacons
-      const visibleMarkers: {
-        loc: NodeLocation;
-        p: { x: number; y: number; z: number };
-      }[] = [];
+      ctx.restore(); // End Earth disc clipping
 
-      for (const loc of activeLocations) {
-        const p = project(loc.lng, loc.lat);
-        if (p.z > 0.05) {
-          visibleMarkers.push({ loc, p });
+      // 8. 3D Flight Arcs between deployed nodes (Image 3)
+      if (activeLocations.length >= 2) {
+        const numArcs = Math.min(activeLocations.length - 1, 4);
+        for (let i = 0; i < numArcs; i++) {
+          const locA = activeLocations[i];
+          const locB = activeLocations[(i + 1) % activeLocations.length];
+          const steps = 30;
+          ctx.beginPath();
+          let arcVisible = false;
+
+          for (let s = 0; s <= steps; s++) {
+            const t = s / steps;
+            const curLat = locA.lat * (1 - t) + locB.lat * t;
+            const curLng = locA.lng * (1 - t) + locB.lng * t;
+            // Parabolic elevation above surface
+            const alt = Math.sin(t * Math.PI) * 0.18;
+            const p = project(curLng, curLat, alt);
+
+            if (p.z > 0.05) {
+              if (!arcVisible) {
+                ctx.moveTo(p.x, p.y);
+                arcVisible = true;
+              } else {
+                ctx.lineTo(p.x, p.y);
+              }
+            } else {
+              arcVisible = false;
+            }
+          }
+
+          if (arcVisible) {
+            const arcGrad = ctx.createLinearGradient(cx - radius, cy, cx + radius, cy);
+            arcGrad.addColorStop(0, "rgba(0, 240, 255, 0.75)");
+            arcGrad.addColorStop(0.5, "rgba(168, 85, 247, 0.8)");
+            arcGrad.addColorStop(1, "rgba(56, 189, 248, 0.75)");
+            ctx.strokeStyle = arcGrad;
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+          }
         }
       }
 
-      visibleMarkers.sort((a, b) => a.p.z - b.p.z);
+      // 9. Active Deployed VPS Nodes with Smart Non-Overlapping Leader Lines (引导线)
+      interface VisibleMarker {
+        loc: NodeLocation;
+        p: { x: number; y: number; z: number };
+        badgeOffset: { x: number; y: number };
+        dir: "left" | "right";
+      }
 
-      for (const { loc, p } of visibleMarkers) {
-        const alpha = Math.min(1, Math.max(0.2, (p.z - 0.05) / 0.5));
-        const pulseSize = 3 + Math.sin(pulseTime * 2.5) * 2;
+      const visibleMarkers: VisibleMarker[] = [];
+      for (const loc of activeLocations) {
+        const p = project(loc.lng, loc.lat);
+        if (p.z > 0.05) {
+          visibleMarkers.push({
+            loc,
+            p,
+            badgeOffset: { x: 0, y: 0 },
+            dir: "right"
+          });
+        }
+      }
 
-        // Outer pulsing ripple ring
-        ctx.strokeStyle = `rgba(243, 128, 32, ${alpha * 0.85})`;
-        ctx.lineWidth = 1.5;
+      // Sort by vertical position (North to South)
+      visibleMarkers.sort((a, b) => a.p.y - b.p.y);
+
+      // Detect clustered markers (nearby nodes like Oregon, San Jose, Los Angeles)
+      // and assign staggered leader lines (引导线)
+      const clusters: VisibleMarker[][] = [];
+      const visited = new Set<VisibleMarker>();
+
+      for (let i = 0; i < visibleMarkers.length; i++) {
+        const m1 = visibleMarkers[i];
+        if (visited.has(m1)) continue;
+        const cluster = [m1];
+        visited.add(m1);
+
+        for (let j = i + 1; j < visibleMarkers.length; j++) {
+          const m2 = visibleMarkers[j];
+          if (visited.has(m2)) continue;
+          const dx = m1.p.x - m2.p.x;
+          const dy = m1.p.y - m2.p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 65) {
+            cluster.push(m2);
+            visited.add(m2);
+          }
+        }
+        clusters.push(cluster);
+      }
+
+      // Assign leader line offsets per cluster to prevent ANY label overlap
+      for (const cluster of clusters) {
+        if (cluster.length === 1) {
+          const m = cluster[0];
+          const goesRight = m.p.x < cx;
+          m.dir = goesRight ? "right" : "left";
+          m.badgeOffset = {
+            x: goesRight ? 32 : -32,
+            y: -24
+          };
+        } else {
+          // Multiple nearby cities! Fan out leader lines at different angles & lengths
+          // Patterns: Top-Left, Top-Right, High-Up, Down-Left, Down-Right
+          const offsets = [
+            { x: -55, y: -36, dir: "left" as const },   // Upper Left
+            { x: 55, y: -32, dir: "right" as const },   // Upper Right
+            { x: -50, y: -68, dir: "left" as const },   // Far Upper Left
+            { x: 50, y: -64, dir: "right" as const },   // Far Upper Right
+            { x: -60, y: 12, dir: "left" as const },    // Lower Left
+            { x: 60, y: 16, dir: "right" as const }     // Lower Right
+          ];
+          for (let k = 0; k < cluster.length; k++) {
+            const m = cluster[k];
+            const cfg = offsets[k % offsets.length];
+            m.badgeOffset = { x: cfg.x, y: cfg.y };
+            m.dir = cfg.dir;
+          }
+        }
+      }
+
+      // Render Leader Lines & Clean Badges (Image 3 Style)
+      for (const m of visibleMarkers) {
+        const { loc, p, badgeOffset, dir } = m;
+        const alpha = Math.min(1, Math.max(0.2, (p.z - 0.05) / 0.45));
+
+        // 1. Globe surface node anchor dot
+        ctx.fillStyle = "#00f0ff";
         ctx.beginPath();
-        ctx.arc(p.x, p.y, pulseSize + 4.5, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Core dot
-        ctx.fillStyle = loc.online ? "#f38020" : "#94a3b8";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 3.2, 0, Math.PI * 2);
         ctx.fill();
 
-        // Beacon vertical beam
-        const beaconHeight = 24 * p.z;
-        ctx.strokeStyle = `rgba(243, 128, 32, ${alpha * 0.9})`;
+        ctx.strokeStyle = "rgba(0, 240, 255, 0.6)";
         ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x, p.y - beaconHeight);
+        ctx.arc(p.x, p.y, 5.5, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Tag badge
+        // 2. High-Tech Angled Leader Line (引导线)
+        const targetX = p.x + badgeOffset.x;
+        const targetY = p.y + badgeOffset.y;
+        const elbowX = p.x + (badgeOffset.x * 0.45);
+
+        ctx.strokeStyle = `rgba(0, 240, 255, ${alpha * 0.85})`;
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(elbowX, targetY);
+        ctx.lineTo(targetX, targetY);
+        ctx.stroke();
+
+        // Small leader line joint dot
+        ctx.fillStyle = `rgba(0, 240, 255, ${alpha * 0.9})`;
+        ctx.beginPath();
+        ctx.arc(targetX, targetY, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 3. Clean Rounded Capsule Badge (Image 3 Style)
         const tagText = `${loc.flag} ${loc.city}`;
         ctx.font = "600 11px Inter, sans-serif";
         const textWidth = ctx.measureText(tagText).width;
-        const tagW = textWidth + 14;
-        const tagH = 20;
-        const tagX = p.x - tagW / 2;
-        const tagY = p.y - beaconHeight - tagH - 2;
+        const tagW = textWidth + 22;
+        const tagH = 22;
+
+        const tagX = dir === "right" ? targetX + 4 : targetX - tagW - 4;
+        const tagY = targetY - tagH / 2;
 
         ctx.save();
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = "rgba(11, 18, 32, 0.92)";
-        ctx.strokeStyle = "rgba(243, 128, 32, 0.55)";
-        ctx.lineWidth = 1;
+
+        // Dark glass background with cyan border glow
+        ctx.fillStyle = "rgba(6, 18, 38, 0.94)";
+        ctx.strokeStyle = "#00f0ff";
+        ctx.lineWidth = 1.2;
+        ctx.shadowColor = "rgba(0, 240, 255, 0.5)";
+        ctx.shadowBlur = 6;
 
         if (ctx.roundRect) {
           ctx.beginPath();
-          ctx.roundRect(tagX, tagY, tagW, tagH, 10);
+          ctx.roundRect(tagX, tagY, tagW, tagH, 6);
           ctx.fill();
           ctx.stroke();
         } else {
@@ -484,9 +647,18 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
           ctx.fill();
           ctx.stroke();
         }
+        ctx.shadowBlur = 0;
 
+        // Text
         ctx.fillStyle = "#ffffff";
-        ctx.fillText(tagText, tagX + 7, tagY + 14);
+        ctx.fillText(tagText, tagX + 8, tagY + 15);
+
+        // Online status dot
+        ctx.fillStyle = loc.online ? "#00f0ff" : "#94a3b8";
+        ctx.beginPath();
+        ctx.arc(tagX + tagW - 8, tagY + tagH / 2, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.restore();
       }
 
@@ -503,7 +675,7 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
     const onMouseMove = (e: MouseEvent) => {
       if (!isDraggingRef.current) return;
       const delta = e.clientX - lastMouseXRef.current;
-      rotationRef.current += delta * 0.008;
+      rotationRef.current += delta * 0.007;
       lastMouseXRef.current = e.clientX;
     };
     const onMouseUp = () => {
@@ -519,7 +691,7 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
     const onTouchMove = (e: TouchEvent) => {
       if (!isDraggingRef.current || e.touches.length === 0) return;
       const delta = e.touches[0].clientX - lastMouseXRef.current;
-      rotationRef.current += delta * 0.008;
+      rotationRef.current += delta * 0.007;
       lastMouseXRef.current = e.touches[0].clientX;
     };
     const onTouchEnd = () => {
@@ -547,7 +719,7 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
     };
-  }, [activeLocations, stars]);
+  }, [activeLocations, deployedCountries, stars]);
 
   return (
     <div
@@ -556,21 +728,44 @@ export function ServerGlobe({ nodes, nameByUuid, className = "" }: ServerGlobePr
       style={{
         minHeight: "330px",
         height: "100%",
-        background: "radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.08) 0%, rgba(6, 9, 18, 0.98) 75%)",
+        background: "radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.07) 0%, rgba(4, 9, 21, 0.98) 75%)",
         borderRadius: "22px",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-        boxShadow: "0 8px 32px -8px rgba(0, 0, 0, 0.6)"
+        border: "1px solid rgba(0, 240, 255, 0.2)",
+        boxShadow: "0 8px 32px -8px rgba(0, 0, 0, 0.65)"
       }}
     >
+      {/* Title with Cyan Glow like Image 3 */}
       <div className="absolute top-4 left-5 flex items-center gap-2 pointer-events-none z-10">
-        <span className="w-2 h-2 rounded-full bg-[#38bdf8] animate-ping" />
-        <span className="text-xs font-semibold text-white/90 tracking-wide uppercase">
-          Global Nodes ({activeLocations.length})
+        <span className="w-2 h-2 rounded-full bg-[#00f0ff] animate-ping" />
+        <span
+          className="text-xs font-bold tracking-wider uppercase"
+          style={{
+            color: "#00f0ff",
+            textShadow: "0 0 10px rgba(0, 240, 255, 0.7)"
+          }}
+        >
+          服务器全球分布区域 · GLOBAL NODES ({activeLocations.length})
         </span>
       </div>
 
-      <div className="absolute top-4 right-5 text-[11px] text-white/40 pointer-events-none z-10">
-        太空白昼夜景 · 标准国界线
+      {/* Top right indicator */}
+      <div className="absolute top-4 right-5 text-[11px] text-[#38bdf8]/60 pointer-events-none z-10 font-mono">
+        {deployedCountries.size} REGIONS · {activeLocations.length} NODES
+      </div>
+
+      {/* HUD Info Card (matching top-left HUD in Image 3) */}
+      <div
+        className="absolute bottom-4 left-5 pointer-events-none z-10 px-3 py-2 rounded-lg text-[11px] font-mono leading-relaxed"
+        style={{
+          background: "rgba(4, 15, 33, 0.82)",
+          border: "1px solid rgba(0, 240, 255, 0.35)",
+          color: "#38bdf8",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.5)"
+        }}
+      >
+        <div>检测到 {deployedCountries.size} 个部署区域</div>
+        <div>加载 {activeLocations.length} 个节点位置...</div>
+        <div className="text-[#00f0ff] font-semibold">状态: 实时监控中</div>
       </div>
 
       <canvas
