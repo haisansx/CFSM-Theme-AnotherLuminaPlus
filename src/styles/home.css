@@ -4179,39 +4179,43 @@
   display: none !important;
 }
 
-/* 用户定制：左侧监控总览拉伸至 480px，右侧地图相应收窄；整体纵向拉伸至 335px-350px，保障内容完整展示 */
+/* 顶部 Hero 容器：左右自适应拉伸，高度自然包裹所有内容，杜绝底部错位重叠 */
 .mao-dashboard-hero {
   display: grid !important;
-  grid-template-columns: 480px minmax(0, 1fr) !important;
-  gap: 16px !important;
+  grid-template-columns: minmax(500px, 1.08fr) minmax(0, 1.35fr) !important;
+  gap: 20px !important;
   align-items: stretch !important;
-  min-height: 335px !important;
-  max-height: 350px !important;
-  margin-bottom: 16px !important;
+  min-height: 380px !important;
+  max-height: none !important;
+  height: auto !important;
+  margin-bottom: 32px !important;
+  padding: 18px 20px !important;
+  box-sizing: border-box !important;
 }
 
 @media (max-width: 1280px) {
   .mao-dashboard-hero {
-    grid-template-columns: 440px minmax(0, 1fr) !important;
+    grid-template-columns: minmax(460px, 1fr) minmax(0, 1.2fr) !important;
   }
 }
 
 @media (max-width: 960px) {
   .mao-dashboard-hero {
     grid-template-columns: 1fr !important;
-    max-height: none !important;
     min-height: auto !important;
   }
 }
 
-/* 左侧监控总览卡片：舒适内边距，完全消除截断与错位 */
+/* 左侧监控总览卡片：左右自适应拉伸，卡片内边距舒适，完全消除溢出与错位 */
 .mao-hero-main {
-  padding: 16px 18px !important;
+  padding: 18px 20px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  min-height: 335px !important;
-  max-height: 350px !important;
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  box-sizing: border-box !important;
   overflow: visible !important;
 }
 
@@ -4238,17 +4242,19 @@
   display: none !important;
 }
 
-/* 用户定制：2x2 四宫格布局，卡片高度舒适完全展示 */
+/* 用户定制：2x2 四宫格布局，卡片左右舒展拉伸，高度舒适，完全包裹在背景块内 */
 .mao-stat-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 10px !important;
+  gap: 12px !important;
   margin-top: auto !important;
+  margin-bottom: 0 !important;
 }
 
 .mao-stat-card {
-  padding: 8px 12px !important;
-  min-height: 64px !important;
+  padding: 10px 14px !important;
+  min-height: 70px !important;
   border-radius: 12px !important;
+  box-sizing: border-box !important;
 }
 
 .mao-stat-card .mao-stat-head {
@@ -4269,42 +4275,26 @@
   line-height: 1.25 !important;
 }
 
-/* 右侧地图卡片：适当收窄且纵向舒展 */
-.server-world-map-card {
-  min-height: 335px !important;
-  max-height: 350px !important;
+/* 右侧侧栏容器：纵向填满红圈范围高度 */
+.mao-hero-side {
+  display: flex !important;
+  flex-direction: column !important;
   height: 100% !important;
-  padding: 12px 16px !important;
+  min-height: 100% !important;
+  min-width: 0 !important;
+}
+
+/* 右侧地图卡片：纵向比例保持红圈范围，横向不强行拉伸，两侧用卡片原有背景留空填充 */
+.server-world-map-card {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
   border-radius: 20px !important;
-}
-
-/* 顶部紧凑状态栏 */
-.mao-cluster-mini-summary {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.03);
-  padding: 4px 10px;
-  border-radius: 9px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  font-size: 11.5px;
-}
-:root[data-appearance="dark"] .mao-cluster-mini-summary {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.06);
-}
-.mao-node-blocks.is-compact {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  flex-wrap: wrap;
-  max-width: 140px;
-}
-.mao-node-blocks.is-compact .mao-node-block {
-  width: 6px;
-  height: 6px;
-  border-radius: 1.5px;
+  padding: 12px 16px !important;
+  box-sizing: border-box !important;
 }
