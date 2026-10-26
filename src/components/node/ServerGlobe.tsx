@@ -9,56 +9,61 @@ interface ServerWorldMapProps {
   className?: string;
 }
 
+type LabelPosition = "top" | "bottom" | "left" | "right";
+
 interface MapLocation {
   key: string;
   name: string;
   x: number;
   y: number;
+  pos: LabelPosition;
   servers: { node: HomeNodeSummary; displayName: string }[];
   onlineCount: number;
 }
 
-// City keyword overrides for Chinese and English names
-const CITY_KEYWORDS: [string[], string, number, number, string][] = [
-  // [keywords], code, x, y, chinese name
-  [["san jose", "sanjose", "圣何塞"], "SJC", 220, 196, "圣何塞"],
-  [["los angeles", "la", "洛杉矶"], "LAX", 233, 209, "洛杉矶"],
-  [["oregon", "俄勒冈", "pdx"], "PDX", 224, 168, "俄勒冈"],
-  [["seattle", "西雅图", "sea"], "SEA", 226, 153, "西雅图"],
-  [["chicago", "芝加哥"], "ORD", 298, 175, "芝加哥"],
-  [["new york", "nyc", "纽约"], "NYC", 336, 178, "纽约"],
-  [["miami", "迈阿密"], "MIA", 322, 237, "迈阿密"],
-  [["dallas", "达拉斯"], "DFW", 277, 212, "达拉斯"],
-  [["nürnberg", "nurnberg", "纽伦堡", "netcup"], "NUE", 659, 168, "纽伦堡"],
-  [["frankfurt", "法兰克福", "euserv"], "FRA", 651, 165, "法兰克福"],
-  [["london", "伦敦"], "LON", 624, 151, "伦敦"],
-  [["paris", "巴黎"], "CDG", 633, 164, "巴黎"],
-  [["amsterdam", "阿姆斯特丹"], "AMS", 637, 153, "阿姆斯特丹"],
-  [["sao paulo", "saopaulo", "são paulo", "圣保罗", "brazil", "brasil"], "GRU", 420, 470, "圣保罗"],
-  [["tokyo", "东京"], "TYO", 1115, 198, "东京"],
-  [["osaka", "大阪"], "OSA", 1109, 207, "大阪"],
-  [["hongkong", "hong kong", "香港", "hk", "hytron"], "HKG", 1039, 263, "香港"],
-  [["taiwan", "taipei", "台湾", "台北"], "TPE", 1067, 253, "台北"],
-  [["singapore", "新加坡", "sg"], "SIN", 1018, 352, "新加坡"],
-  [["seoul", "首尔", "kr"], "SEL", 1083, 198, "首尔"],
-  [["beijing", "北京"], "PEK", 1025, 178, "北京"],
-  [["shanghai", "上海"], "PVG", 1057, 225, "上海"],
-  [["guangzhou", "广州"], "CAN", 1032, 258, "广州"],
-  [["shenzhen", "深圳"], "SZX", 1037, 261, "深圳"],
-  [["sydney", "悉尼"], "SYD", 1180, 505, "悉尼"]
+// Precise dot coordinates mapped directly to world-map.svg (1280x621)
+const CITY_KEYWORDS: [string[], string, number, number, string, LabelPosition][] = [
+  // West Coast USA (Strictly on real-world Pacific Coastline dots: Oregon north, San Jose mid, LA south)
+  [["oregon", "俄勒冈", "pdx"], "PDX", 98, 170, "俄勒冈", "top"],
+  [["san jose", "sanjose", "圣何塞"], "SJC", 92, 194, "圣何塞", "left"],
+  [["los angeles", "la", "洛杉矶"], "LAX", 104, 212, "洛杉矶", "bottom"],
+  [["seattle", "西雅图", "sea"], "SEA", 105, 158, "西雅图", "top"],
+  // Central & East USA
+  [["chicago", "芝加哥"], "ORD", 220, 175, "芝加哥", "top"],
+  [["new york", "nyc", "纽约"], "NYC", 274, 182, "纽约", "right"],
+  [["miami", "迈阿密"], "MIA", 286, 236, "迈阿密", "bottom"],
+  [["dallas", "达拉斯"], "DFW", 196, 225, "达拉斯", "bottom"],
+  // Europe
+  [["london", "伦敦"], "LON", 635, 142, "伦敦", "top"],
+  [["paris", "巴黎"], "CDG", 642, 155, "巴黎", "left"],
+  [["frankfurt", "法兰克福", "euserv"], "FRA", 665, 160, "法兰克福", "top"],
+  [["nürnberg", "nurnberg", "纽伦堡", "netcup"], "NUE", 670, 168, "纽伦堡", "bottom"],
+  [["amsterdam", "阿姆斯特丹"], "AMS", 650, 148, "阿姆斯特丹", "top"],
+  // South America
+  [["sao paulo", "saopaulo", "são paulo", "圣保罗", "brazil", "brasil"], "GRU", 398, 460, "圣保罗", "bottom"],
+  // Asia & Oceania
+  [["tokyo", "东京"], "TYO", 1102, 208, "东京", "bottom"],
+  [["osaka", "大阪"], "OSA", 1092, 214, "大阪", "left"],
+  [["hongkong", "hong kong", "香港", "hk", "hytron"], "HKG", 1025, 260, "香港", "bottom"],
+  [["taiwan", "taipei", "台湾", "台北"], "TPE", 1045, 252, "台北", "right"],
+  [["singapore", "新加坡", "sg"], "SIN", 1005, 345, "新加坡", "bottom"],
+  [["seoul", "首尔", "kr"], "SEL", 1070, 198, "首尔", "top"],
+  [["beijing", "北京"], "PEK", 1015, 178, "北京", "top"],
+  [["shanghai", "上海"], "PVG", 1045, 225, "上海", "right"],
+  [["sydney", "悉尼"], "SYD", 1180, 505, "悉尼", "bottom"]
 ];
 
 function resolveServerLocation(
   node: HomeNodeSummary,
   displayName: string
-): { code: string; name: string; x: number; y: number } {
+): { code: string; name: string; x: number; y: number; pos: LabelPosition } {
   const nameLower = (displayName || "").toLowerCase();
   const regUpper = (node.region || "US").toUpperCase();
 
   // 1. Check city keywords
-  for (const [keywords, code, x, y, cname] of CITY_KEYWORDS) {
+  for (const [keywords, code, x, y, cname, pos] of CITY_KEYWORDS) {
     if (keywords.some((k) => nameLower.includes(k))) {
-      return { code, name: cname, x, y };
+      return { code, name: cname, x, y, pos };
     }
   }
 
@@ -71,7 +76,8 @@ function resolveServerLocation(
       code,
       name: mapped.name || regUpper,
       x: mapped.x,
-      y: mapped.y
+      y: mapped.y,
+      pos: "bottom"
     };
   }
 
@@ -82,16 +88,18 @@ function resolveServerLocation(
       code,
       name: mapped.name || regUpper,
       x,
-      y
+      y,
+      pos: "bottom"
     };
   }
 
-  // 3. Fallback coordinate
+  // 3. Fallback coordinate (US West Coast)
   return {
     code: "US",
     name: "美国",
-    x: 233,
-    y: 209
+    x: 104,
+    y: 212,
+    pos: "bottom"
   };
 }
 
@@ -116,6 +124,7 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
           name: loc.name,
           x: loc.x,
           y: loc.y,
+          pos: loc.pos,
           servers: [{ node, displayName }],
           onlineCount: node.online ? 1 : 0
         });
@@ -126,6 +135,41 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
   }, [nodes, nameByUuid]);
 
   const totalOnline = useMemo(() => nodes.filter((n) => n.online).length, [nodes]);
+
+  // Helper to get badge positioning style based on direction to prevent overlap
+  const getBadgeStyle = (pos: LabelPosition) => {
+    switch (pos) {
+      case "top":
+        return {
+          bottom: "100%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          marginBottom: "7px"
+        };
+      case "left":
+        return {
+          right: "100%",
+          top: "50%",
+          transform: "translateY(-50%)",
+          marginRight: "8px"
+        };
+      case "right":
+        return {
+          left: "100%",
+          top: "50%",
+          transform: "translateY(-50%)",
+          marginLeft: "8px"
+        };
+      case "bottom":
+      default:
+        return {
+          top: "100%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          marginTop: "7px"
+        };
+    }
+  };
 
   return (
     <div
@@ -178,6 +222,7 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
             const leftPct = (loc.x / 1280) * 100;
             const topPct = (loc.y / 621) * 100;
             const isHovered = activeTooltipKey === loc.key;
+            const badgePosStyle = getBadgeStyle(loc.pos);
 
             return (
               <div
@@ -220,10 +265,11 @@ export function ServerWorldMap({ nodes, nameByUuid, className = "" }: ServerWorl
                   />
                 </div>
 
-                {/* Black Tag Badge (nazhua style: '东京,1台') */}
+                {/* Black Tag Badge (nazhua style: '东京,1台') with smart positioning */}
                 <div
-                  className="absolute left-1/2 -translate-x-1/2 mt-1.5 px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-medium whitespace-nowrap pointer-events-none transition-transform group-hover:scale-105"
+                  className="absolute px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-medium whitespace-nowrap pointer-events-none transition-transform group-hover:scale-105 z-20"
                   style={{
+                    ...badgePosStyle,
                     background: "rgba(0, 0, 0, 0.88)",
                     color: "#ffffff",
                     border: "1px solid rgba(255, 255, 255, 0.18)",
